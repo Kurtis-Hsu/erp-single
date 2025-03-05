@@ -1,5 +1,6 @@
 package com.vireosci.erp
 
+import com.vireosci.erp.util.LOCAL_IP
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.SpringApplicationRunListener
@@ -10,13 +11,8 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-// 日期格式
-const val DEFAULT_DATE_FORMAT = "yyyy-MM-dd"
-
-// 日期时间格式
-const val DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
-
-@SpringBootApplication class App
+@SpringBootApplication
+class App
 
 // 启动监听器
 class BootListener(app: SpringApplication) : SpringApplicationRunListener
@@ -27,7 +23,7 @@ class BootListener(app: SpringApplication) : SpringApplicationRunListener
     {
         val env = context.environment
 
-        val projectName = env.getProperty("spring.application.name") ?: "ERP"
+        val projectName = env.getProperty("spring.application.name") ?: "project"
         val startTime = DateTimeFormatter.ofPattern(DEFAULT_DATETIME_FORMAT).format(LocalDateTime.now())
         val protocol = env.getProperty("server.protocol") ?: "http"
         val port = env.getProperty("server.port") ?: "8080"
@@ -38,7 +34,7 @@ class BootListener(app: SpringApplication) : SpringApplicationRunListener
             ---------------------------------------------------------------------------
                 (♥◠‿◠)ﾉﾞ [ $projectName ] runs successfully!  ლ(´ڡ`ლ)ﾞ
                 Started time: $startTime
-                         Url: $protocol://$LOCAL_IP:$port
+                         Url: $protocol://${LOCAL_IP}:$port
                   Components: ${context.beanDefinitionCount}
                  System info: ${System.getProperty("os.name")} ${System.getProperty("os.arch")}
                    Java info: ${System.getProperty("java.vm.name")} v${System.getProperty("java.version")}

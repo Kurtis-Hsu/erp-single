@@ -1,11 +1,7 @@
-package com.vireosci.erp
+package com.vireosci.erp.util
 
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.ApplicationContext
-import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import java.net.InetAddress
 
@@ -36,19 +32,3 @@ val HttpServletRequest.ip: String
     }
 
 private val String?.isValidIp get() = StringUtils.hasText(this) && !"unknown".equals(this, ignoreCase = true)
-
-/**
- * Spring 工具
- */
-@Component
-class SpringUtil @Autowired constructor(
-    webApplicationContext: ApplicationContext,
-    /**
-     * 请求对象
-     */
-    val request: HttpServletRequest,
-    /**
-     * 响应对象
-     */
-    val response: HttpServletResponse
-) : ApplicationContext by webApplicationContext

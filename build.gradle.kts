@@ -1,9 +1,10 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 val javaVersion = 23
-val env = project.property("env") ?: "prod"
+val env = project.property("env") ?: "dev"
 
 plugins {
+    war
     java
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.boot.dependency.management)
@@ -11,7 +12,16 @@ plugins {
     alias(libs.plugins.kotlin.spring)
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
+    sourceSets.main {
+        resources.include(
+            "META-INF/**",
+            "config/application.yml", "config/application-$env.yml",
+            "banner.txt"
+        )
+    }
+}
 
 repositories {
     mavenCentral()
@@ -27,8 +37,10 @@ allOpen {
 
 dependencies {
     // Spring Framework
-    implementation("org.springframework.boot", "spring-boot-starter-data-redis")
     implementation("org.springframework.boot", "spring-boot-starter-web")
+    implementation("org.springframework.boot", "spring-boot-starter-security")
+    providedRuntime("org.springframework.boot", "spring-boot-starter-tomcat")
+    implementation("org.springframework.boot", "spring-boot-starter-data-redis")
     implementation("org.springframework.boot", "spring-boot-starter-validation")
     implementation("org.springframework.boot", "spring-boot-starter-test")
     compileOnly("org.springframework.boot", "spring-boot-configuration-processor")
@@ -39,16 +51,25 @@ dependencies {
     // PostgreSQL
     runtimeOnly("org.postgresql", "postgresql")
 
+    // Jasypt encryption/decryption tool
+    implementation(libs.jasypt)
+
+
     // JUnit Test
     testRuntimeOnly("org.junit.platform", "junit-platform-launcher")
 }
+
+springBoot.mainClass = "com.vireosci.erp.AppKt"
 
 tasks.test {
     useJUnitPlatform()
 }
 
 tasks.processResources {
-    filesMatching("application.yml") {
+    filesMatching("config/**/*.yml") {
         filter<ReplaceTokens>("tokens" to mapOf("env" to env))
+    }
+    filesMatching("banner.txt") {
+        filter<ReplaceTokens>("tokens" to mapOf("version" to version))
     }
 }

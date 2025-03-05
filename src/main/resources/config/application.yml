@@ -1,0 +1,59 @@
+server:
+  port: 10000
+
+spring:
+  application:
+    name: erp-single
+  profiles:
+    active: @env@
+  mvc:
+    servlet:
+      load-on-startup: 1
+    problemdetails:
+      enabled: on
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  threads:
+    virtual:
+      enabled: on
+  aop:
+    auto: on
+    proxy-target-class: on
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  file:
+    path: log
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:}){magenta} - %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID} - [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: on # 是否开启下划线-驼峰命名映射
+    local-cache-scope: statement # 关闭一级缓存
+    cache-enabled: on # 是否开启二级缓存
+  global-config:
+    banner: off
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: true
+      logic-not-delete-value: false
+
+# application.yml
+jasypt:
+  encryptor:
+    gcm-secret-key-password: ${env-ext.erp-security-key}
+    algorithm: PBEWithMD5AndDES
+    key-obtention-iterations: 1000
+    pool-size: 1
+    provider-name: SunJCE
+    salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
+    string-output-type: base64
+
+# 获取扩展的环境变量
+env-ext:
+  erp-security-key: ${ERP_SECURITY_KEY}
